@@ -8,6 +8,6 @@ router.get("/blog/:id", GetBlog);
 router.post("/login", LoginAPI);
 router.post("/register", RegisterAPI);
 router.post("/create-blog", clientVerifyToken, CreateBlog);
-router.put("/edit-blog", EditBlog);
+router.put("/edit", clientVerifyToken, EditBlog);
 
 export default router;

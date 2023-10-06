@@ -13,7 +13,7 @@ export const LoginAPI = async (req, res, next) => {
         if (emailSearch && passwordConfirm) {
             let token = generateToken({ email: email, phone: emailSearch.phone, name: emailSearch.name });
             console.log(emailSearch);
-            res.status(201).json({ dispatch: { name: emailSearch.name, email: email, token: token } });
+            res.status(201).json({ dispatch: { name: emailSearch.name, email: email, token: token, id: emailSearch._id } });
             console.log("response done");
         } else {
             res.status(400).json({ response: "invalid credentials" });
@@ -42,7 +42,6 @@ export const RegisterAPI = async (req, res, next) => {
             res.status(201).json({ response: "user created" });
         } catch (error) {
             console.log(error.message);
-            console.log("register error");
         }
     } catch (error) {
         res.status(500).json({ response: error.message });
@@ -77,7 +76,14 @@ export const CreateBlog = async (req, res, next) => {
 };
 export const EditBlog = async (req, res, next) => {
     try {
-        console.log(req.params);
+        const { id, summary, title, files, content } = req.body;
+        let blogId = new mongoose.Types.ObjectId(id);
+        const userId = await UserModel.findOne({ email: req.user.email });
+        const response = await BlogModel.updateMany(
+            { _id: blogId },
+            { $set: { title: title, cover: files, summary: summary, content: content, author: userId._id } }
+        );
+        res.status(200).json({ response: "updated" });
     } catch (error) {
         res.status(500).json({ response: error.message });
     }
@@ -85,14 +91,10 @@ export const EditBlog = async (req, res, next) => {
 export const GetBlog = async (req, res, next) => {
     try {
         const { id } = req.params;
-        console.log(id);
         let blogId = new mongoose.Types.ObjectId(id);
-
         const response = await BlogModel.findOne({ _id: blogId }).populate("author");
-        console.log(response);
-        // res.status(202).json({ result: response });
+        res.status(202).json({ result: response });
     } catch (error) {
-        console.log(error, "in get blog");
         res.status(500).json({ response: error.message });
     }
 };

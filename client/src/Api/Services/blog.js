@@ -32,3 +32,15 @@ export const SingleBlog = async (id) => {
         return error?.response;
     }
 };
+
+export const EditBlogAPI = async (data, token) => {
+    try {
+        const response = AxiosURL.put(`/edit`, data, {
+            headers: { Authorization: "Bearer " + token },
+        });
+        return response;
+    } catch (error) {
+        console.log(error?.message);
+        return error?.response;
+    }
+};

@@ -35,7 +35,7 @@ function CreatePost() {
             return;
         }
         const response = await BlogCreate({ title: title, summary: summary, content: content, files: files }, token);
-        if (response.status === 201) {
+        if (response.status === 200) {
             message.success("blog posted");
             navigate("/");
         } else {
