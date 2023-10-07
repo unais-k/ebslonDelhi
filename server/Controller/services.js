@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import UserModel from "./../Models/userModel.js";
 import BlogModel from "./../Models/blogModel.js";
 import mongoose from "mongoose";
+import { Parser } from "json2csv";
 
 export const LoginAPI = async (req, res, next) => {
     try {
@@ -88,12 +89,55 @@ export const EditBlog = async (req, res, next) => {
         res.status(500).json({ response: error.message });
     }
 };
+
 export const GetBlog = async (req, res, next) => {
     try {
         const { id } = req.params;
         let blogId = new mongoose.Types.ObjectId(id);
         const response = await BlogModel.findOne({ _id: blogId }).populate("author");
         res.status(202).json({ result: response });
+    } catch (error) {
+        res.status(500).json({ response: error.message });
+    }
+};
+
+export const DeleteBlog = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        let blogId = new mongoose.Types.ObjectId(id);
+        const response = await BlogModel.deleteOne({ _id: blogId });
+        res.status(202).json({ response: "blog deleted" });
+    } catch (error) {
+        res.status(500).json({ response: error.message });
+    }
+};
+
+const decodeImage = async (image) => {
+    const base64Image = image.replace(/^data:image\/\w+;base64,/, "");
+
+    // Decode base64 to binary data
+    const binaryImageData = Buffer.from(base64Image, "base64");
+
+    // Save the binary image data to a file (e.g., based on the document's _id)
+    const filename = `${_id}.jpg`; // You can customize the file extension
+    fs.writeFileSync(filename, binaryImageData);
+};
+
+export const DownloadBlog = async (req, res, next) => {
+    try {
+        const userData = await BlogModel.find({}).populate("author");
+        const csvParserData = [];
+        userData.forEach((user) => {
+            const { id, title, summary, content, cover } = user;
+            csvParserData.push({ id, title, summary, content, cover });
+        });
+        const csvFields = ["Id", "Title", "Summary", "Content", "Cover"];
+        const csvParser = new Parser({ csvFields });
+        const csvData = csvParser.parse(csvParserData);
+
+        res.setHeader("Content-Type", "text/csv");
+        res.setHeader("Content-Disposition", "attatchment: filename=blogData.csv");
+        res.send(csvData);
     } catch (error) {
         res.status(500).json({ response: error.message });
     }

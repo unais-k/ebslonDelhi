@@ -3,16 +3,32 @@ import { close, logo, menu } from "../assets/index.js";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setLogout } from "../Constants/userStore.js";
+import { DownloadBlog } from "../Api/Services/blog.js";
 
 function Navbar() {
     const [toggle, setToggle] = useState(false);
     const navigate = useNavigate();
     const token = useSelector((state) => state.userLogin.token);
     const dispatch = useDispatch();
+    const handleDownload = async () => {
+        const response = await DownloadBlog(token);
+
+        const link = document.createElement("a");
+        link.href = window.URL.createObjectURL(new Blob([response.data]));
+        link.setAttribute("download", "data.csv");
+        document.body.appendChild(link);
+        link.click();
+
+        // Cleanup
+        document.body.removeChild(link);
+    };
     return (
         <nav className="w-full flex py-6 justify-between px-0 md:px-10 items-center navbar">
             <div>
-                <h2 className="font-poppins text-white font-semibold xs:text-[48px] text-[35px] xs:leading-[76.8px] leading-[66.8px] w-full">
+                <h2
+                    onClick={() => navigate("/")}
+                    className="font-poppins text-white font-semibold xs:text-[48px] text-[35px] xs:leading-[76.8px] leading-[66.8px] w-full"
+                >
                     My Blog App
                 </h2>
             </div>
@@ -24,7 +40,13 @@ function Navbar() {
                                 onClick={() => navigate("/create-blog")}
                                 className={`font-poppins font-normal cursor-pointer text-[16px] "mr-10" text-white`}
                             >
-                                Create New Post
+                                Create post
+                            </li>
+                            <li
+                                onClick={() => handleDownload()}
+                                className={`font-poppins font-normal cursor-pointer text-[16px] "mr-10" text-white`}
+                            >
+                                Download blog
                             </li>
                             <li
                                 onClick={() => {
@@ -74,7 +96,13 @@ function Navbar() {
                                     onClick={() => navigate("/create-blog")}
                                     className={`font-poppins font-normal cursor-pointer text-[16px] "mr-10" text-white`}
                                 >
-                                    Create New Post
+                                    Create post
+                                </li>
+                                <li
+                                    onClick={() => handleDownload()}
+                                    className={`font-poppins font-normal cursor-pointer text-[16px] "mr-10" text-white`}
+                                >
+                                    Download blog
                                 </li>
                                 <li
                                     onClick={() => {

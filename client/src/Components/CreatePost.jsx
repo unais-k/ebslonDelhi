@@ -35,7 +35,7 @@ function CreatePost() {
             return;
         }
         const response = await BlogCreate({ title: title, summary: summary, content: content, files: files }, token);
-        if (response.status === 200) {
+        if (response.status === 201) {
             message.success("blog posted");
             navigate("/");
         } else {
@@ -54,7 +54,10 @@ function CreatePost() {
                     <Navbar />
                 </div>
             </div>
-            <div className="flex flex-col items-center justify-center sm:px-16 px-6 my-auto h-[600px]">
+            <div className="flex flex-col items-center justify-center sm:px-16 px-6 py-10 my-auto h-fit">
+                <h1 className="text-center font-poppins text-black font-semibold xs:text-[48px] text-[40px] xs:leading-[76.8px] leading-[66.8px] w-full">
+                    Create Post
+                </h1>
                 <form onSubmit={handlePost} className="max-w-[900px] mx-auto">
                     <input
                         type="title"
@@ -79,7 +82,7 @@ function CreatePost() {
 
                     <Editor value={content} onChange={setContent} />
 
-                    <Button title={"Create Post"} />
+                    <Button title={"Submit"} />
                 </form>
             </div>
         </div>
