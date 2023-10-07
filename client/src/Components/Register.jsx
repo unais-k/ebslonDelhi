@@ -35,10 +35,10 @@ function Register() {
             setErrorMessage("Invalid phone.");
             return;
         }
-        // if (password.length < 8) {
-        //     setErrorMessage("Password strength is at least 8");
-        //     return;
-        // }
+        if (password.length < 8) {
+            setErrorMessage("Password strength is at least 8");
+            return;
+        }
         const response = await RegisterAPI({ email: email, username: username, password: password, phone: phone });
         try {
             if (response.status === 201) {
